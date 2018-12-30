@@ -35,7 +35,7 @@ public class MainXml {
             System.exit(1);
         }
         String projectName = args[0];
-        URL payloadUrl = Resources.getResource("payload.xml");
+        URL payloadUrl = Resources.getResource("src/test/resources/payload.xml");
 
         Set<User> users = parseByJaxb(projectName, payloadUrl);
         users.forEach(System.out::println);
@@ -60,7 +60,7 @@ public class MainXml {
 
     private static Set<User> parseByJaxb(String projectName, URL payloadUrl) throws Exception {
         JaxbParser parser = new JaxbParser(ObjectFactory.class);
-        parser.setSchema(Schemas.ofClasspath("payload.xsd"));
+        parser.setSchema(Schemas.ofClasspath("src/main/resources/payload.xsd"));
         Payload payload;
         try (InputStream is = payloadUrl.openStream()) {
             payload = parser.unmarshal(is);
@@ -130,7 +130,7 @@ public class MainXml {
     }
 
     private static String transform(String projectName, URL payloadUrl) throws Exception {
-        URL xsl = Resources.getResource("groups.xsl");
+        URL xsl = Resources.getResource("src/main/resources/groups.xsl");
         try (InputStream xmlStream = payloadUrl.openStream(); InputStream xslStream = xsl.openStream()) {
             XsltProcessor processor = new XsltProcessor(xslStream);
             processor.setParameter("projectName", projectName);

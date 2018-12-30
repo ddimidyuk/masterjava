@@ -13,14 +13,14 @@ public class JaxbParserTest {
     private static final JaxbParser JAXB_PARSER = new JaxbParser(ObjectFactory.class);
 
     static {
-        JAXB_PARSER.setSchema(Schemas.ofClasspath("payload.xsd"));
+        JAXB_PARSER.setSchema(Schemas.ofClasspath("src/main/resources/payload.xsd"));
     }
 
     @Test
     public void testPayload() throws Exception {
 //        JaxbParserTest.class.getResourceAsStream("/city.xml")
         Payload payload = JAXB_PARSER.unmarshal(
-                Resources.getResource("payload.xml").openStream());
+                Resources.getResource("src/test/resources/payload.xml").openStream());
         String strPayload = JAXB_PARSER.marshal(payload);
         JAXB_PARSER.validate(strPayload);
         System.out.println(strPayload);
@@ -29,7 +29,7 @@ public class JaxbParserTest {
     @Test
     public void testCity() throws Exception {
         JAXBElement<CityType> cityElement = JAXB_PARSER.unmarshal(
-                Resources.getResource("city.xml").openStream());
+                Resources.getResource("src/test/resources/city.xml").openStream());
         CityType city = cityElement.getValue();
         JAXBElement<CityType> cityElement2 =
                 new JAXBElement<>(new QName("http://javaops.ru", "City"), CityType.class, city);

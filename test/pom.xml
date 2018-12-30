@@ -6,27 +6,29 @@
 
     <parent>
         <groupId>ru.javaops</groupId>
-        <artifactId>parent-web</artifactId>
-        <relativePath>../parent-web/pom.xml</relativePath>
+        <artifactId>parent</artifactId>
+        <relativePath>../parent/pom.xml</relativePath>
         <version>1.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>upload</artifactId>
+    <groupId>ru.javaops</groupId>
+    <artifactId>test</artifactId>
     <version>1.0-SNAPSHOT</version>
-    <packaging>war</packaging>
-    <name>Upload</name>
+    <packaging>jar</packaging>
+    <name>Test</name>
 
     <dependencies>
         <dependency>
-            <groupId>ru.javaops</groupId>
-            <artifactId>common</artifactId>
-            <version>${project.version}</version>
+            <groupId>org.openjdk.jmh</groupId>
+            <artifactId>jmh-core</artifactId>
+            <version>RELEASE</version>
         </dependency>
-
         <dependency>
-            <groupId>com.j2html</groupId>
-            <artifactId>j2html</artifactId>
-            <version>1.2.0</version>
+            <groupId>org.openjdk.jmh</groupId>
+            <artifactId>jmh-generator-annprocess</artifactId>
+            <version>RELEASE</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
+
 </project>
