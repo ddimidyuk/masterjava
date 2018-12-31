@@ -13,7 +13,7 @@ public class XPathProcessorTest {
     @Test
     public void getCities() throws Exception {
         try (InputStream is =
-                     Resources.getResource("src/test/resources/payload.xml").openStream()) {
+                     Resources.getResource("payload.xml").openStream()) {
             XPathProcessor processor = new XPathProcessor(is);
             XPathExpression expression =
                     XPathProcessor.getExpression("/*[name()='Payload']/*[name()='Cities']/*[name()='City']/text()");

@@ -35,7 +35,7 @@ public class MainXml {
             System.exit(1);
         }
         String projectName = args[0];
-        URL payloadUrl = Resources.getResource("src/test/resources/payload.xml");
+        URL payloadUrl = Resources.getResource("payload.xml");
 
         Set<User> users = parseByJaxb(projectName, payloadUrl);
         users.forEach(System.out::println);
