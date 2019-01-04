@@ -13,3 +13,5 @@ CREATE TABLE users (
   flag      user_flag NOT NULL
 );
 
+CREATE UNIQUE INDEX email_idx on users using btree (email);
+
