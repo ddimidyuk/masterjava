@@ -11,6 +11,7 @@
         <th>Full Name</th>
         <th>Email</th>
         <th>Flag</th>
+        <th>City</th>
     </tr>
     </thead>
     <tbody>
@@ -20,6 +21,7 @@
         <td th:text="${user.fullName}"></td>
         <td th:utext="${user.email}"></td>
         <td th:text="${user.flag}"></td>
+        <td th:text="${user.city.name}"></td>
     </tr>
     </tbody>
 </table>

@@ -3,8 +3,11 @@ package ru.javaops.masterjava.upload;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import ru.javaops.masterjava.exception.UploadException;
 import ru.javaops.masterjava.persist.DBIProvider;
+import ru.javaops.masterjava.persist.dao.CityDao;
 import ru.javaops.masterjava.persist.dao.UserDao;
+import ru.javaops.masterjava.persist.model.City;
 import ru.javaops.masterjava.persist.model.User;
 import ru.javaops.masterjava.persist.model.UserFlag;
 import ru.javaops.masterjava.xml.schema.ObjectFactory;
@@ -24,17 +27,20 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import static ru.javaops.masterjava.utils.Validator.checkNotNull;
+
 @Slf4j
 public class UserProcessor {
     private static final int NUMBER_THREADS = 4;
 
     private static final JaxbParser jaxbParser = new JaxbParser(ObjectFactory.class);
     private static UserDao userDao = DBIProvider.getDao(UserDao.class);
+    private static CityDao cityDao = DBIProvider.getDao(CityDao.class);
 
     private ExecutorService executorService = Executors.newFixedThreadPool(NUMBER_THREADS);
 
     @AllArgsConstructor
-    public static class  FailedEmails {
+    public static class FailedEmails {
         public String emailsOrRange;
         public String reason;
 
@@ -47,7 +53,7 @@ public class UserProcessor {
     /*
      * return failed users chunks
      */
-    public List<FailedEmails> process(final InputStream is, int chunkSize) throws XMLStreamException, JAXBException {
+    public List<FailedEmails> process(final InputStream is, int chunkSize, Map<String, City> cityCache) throws XMLStreamException, JAXBException {
         log.info("Start processing with chunkSize=" + chunkSize);
 
         Map<String, Future<List<String>>> chunkFutures = new LinkedHashMap<>();  // ordered map (emailRange -> chunk future)
@@ -59,7 +65,19 @@ public class UserProcessor {
 
         while (processor.doUntil(XMLEvent.START_ELEMENT, "User")) {
             ru.javaops.masterjava.xml.schema.User xmlUser = unmarshaller.unmarshal(processor.getReader(), ru.javaops.masterjava.xml.schema.User.class);
-            final User user = new User(id++, xmlUser.getValue(), xmlUser.getEmail(), UserFlag.valueOf(xmlUser.getFlag().value()));
+            String cityCode = xmlUser.getCity().toString();
+            City city = null;
+            if (cityCache != null && cityCache.get(cityCode) != null) {
+                city = cityCache.get(cityCode);
+            } else {
+                try {
+                    city = cityDao.getByCode(cityCode);
+                    checkNotNull(city);
+                } catch (Exception e) {
+                    throw new UploadException("Upload failed. Unable to find city with code=" + cityCode);
+                }
+            }
+            final User user = new User(id++, xmlUser.getValue(), xmlUser.getEmail(), UserFlag.valueOf(xmlUser.getFlag().value()), city);
             chunk.add(user);
             if (chunk.size() == chunkSize) {
                 addChunkFutures(chunkFutures, chunk);
