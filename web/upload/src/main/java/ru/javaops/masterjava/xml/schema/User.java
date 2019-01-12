@@ -44,9 +44,8 @@ public class User {
     @XmlSchemaType(name = "IDREF")
     protected Object city;
     @XmlAttribute(name = "groupRefs")
-    @XmlIDREF
     @XmlSchemaType(name = "IDREFS")
-    protected List<Object> groupRefs;
+    protected List<String> groupRefs;
 
     /**
      * Gets the value of the value property.
@@ -166,9 +165,9 @@ public class User {
      * 
      * 
      */
-    public List<Object> getGroupRefs() {
+    public List<String> getGroupRefs() {
         if (groupRefs == null) {
-            groupRefs = new ArrayList<Object>();
+            groupRefs = new ArrayList<>();
         }
         return this.groupRefs;
     }
