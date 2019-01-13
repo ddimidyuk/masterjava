@@ -1,11 +1,18 @@
 package ru.javaops.masterjava.service.mail;
 
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.mail.Email;
+import org.apache.commons.mail.EmailException;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.*;
 import java.util.stream.Collectors;
 
+import static ru.javaops.masterjava.service.mail.MailBuilder.createEmail;
+
+@Slf4j
 public class MailServiceExecutor {
     private static final String OK = "OK";
 
@@ -15,11 +22,12 @@ public class MailServiceExecutor {
 
     private final ExecutorService mailExecutor = Executors.newFixedThreadPool(8);
 
-    public GroupResult sendToList(final String template, final Set<String> emails) throws Exception {
+
+    public GroupResult sendToList(final String template, final String subject, final Set<String> emails) {
         final CompletionService<MailResult> completionService = new ExecutorCompletionService<>(mailExecutor);
 
         List<Future<MailResult>> futures = emails.stream()
-                .map(email -> completionService.submit(() -> sendToUser(template, email)))
+                .map(email -> completionService.submit(() -> sendToUser(template, subject, email)))
                 .collect(Collectors.toList());
 
         return new Callable<GroupResult>() {
@@ -82,15 +90,17 @@ public class MailServiceExecutor {
         }.call();
     }
 
-    // dummy realization
-    public MailResult sendToUser(String template, String email) throws Exception {
+    public MailResult sendToUser(String template, String subject, String email) {
+        String res = OK;
+        Email emailObj = null;
         try {
-            Thread.sleep(500);  //delay
-        } catch (InterruptedException e) {
-            // log cancel;
-            return null;
+            emailObj = createEmail(email, template, subject);
+            emailObj.send();
+        } catch (EmailException e) {
+            log.warn("Couldn't send email " + emailObj);
+            res = e.getMessage();
         }
-        return Math.random() < 0.7 ? MailResult.ok(email) : MailResult.error(email, "Error");
+        return new MailResult(email, res);
     }
 
     public static class MailResult {

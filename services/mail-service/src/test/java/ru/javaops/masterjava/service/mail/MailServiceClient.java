@@ -15,6 +15,6 @@ public class MailServiceClient {
                 new QName("http://mail.service.masterjava.javaops.ru/", "MailServiceImplService"));
 
         MailService mailService = service.getPort(MailService.class);
-        mailService.sendMail(ImmutableList.of(new Addressee("masterjava@javaops.ru", null)), null, "Subject", "Body");
+        mailService.sendMail(ImmutableList.of(new Addressee("havegood@yandex.ru", null)), null, "Subject", "Body");
     }
 }
